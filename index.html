@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>موقع شات فوري</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; margin: 0; }
+        #chat-wrap { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
+        .msg { background: white; padding: 10px; margin: 5px 0; border-radius: 8px; max-width: 60%; }
+        #form-wrap { display: flex; padding: 10px; background: white; }
+        #input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        #btn { padding: 10px 20px; background: #0084ff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="chat-wrap"></div>
+    <div id="form-wrap">
+        <input id="input" placeholder="اكتب رسالتك هنا..." autocomplete="off"/>
+        <button id="btn">إرسال</button>
+    </div>
+
+    <!-- استدعاء مكتبة socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const chatWrap = document.getElementById('chat-wrap');
+        const input = document.getElementById('input');
+        const btn = document.getElementById('btn');
+
+        btn.addEventListener('click', () => {
+            if (input.value) {
+                socket.emit('chat message', input.value); // إرسال للسيرفر
+                input.value = '';
+            }
+        });
+
+        socket.on('chat message', (msg) => { // استقبال من السيرفر
+            const item = document.createElement('div');
+            item.classList.add('msg');
+            item.textContent = msg;
+            chatWrap.appendChild(item);
+            chatWrap.scrollTop = chatWrap.scrollHeight;
+        });
+    </script>
+</body>
+</html>
+
